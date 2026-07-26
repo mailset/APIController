@@ -1,0 +1,17 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    callback request-increase-value();
+    VerticalBox {
+        Text {
+            text: "";
+        }
+
+        Button {
+            text: "Send";
+            clicked => {
+                root.request-increase-value();
+            }
+        }
+    }
+}
