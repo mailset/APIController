@@ -1,16 +1,49 @@
-import { Button, VerticalBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox, Switch, TextEdit, LineEdit, ProgressIndicator } from "std-widgets.slint";
 
 export component AppWindow inherits Window {
-    callback request-increase-value();
-    VerticalBox {
-        Text {
-            text: "";
-        }
+    title: "Mini API Controller";
+    width: 550px;
+    height: 250px;
+    callback request-clicked(bool);
+    property <string> edit-font-family: "Consolas";
+    property <string> request-url;
+    property <string> request-type: "application/json";
+    property <string> request-content: "{\"Content\":\"Hello\"}";
+    property <bool> loading: false;
+    property <bool> is_post: false;
+    VerticalLayout {
+        HorizontalBox {
+            Switch {
+                text: is_post ? "POST" : "GET  ";
+                checked <=> is_post;
+            }
+            LineEdit {
+                placeholder-text: "https://www.example.com/api";
+                text <=> request-url;
+                font-size: 16px;
+                font-family: edit-font-family;
+                vertical-stretch: 0;
+            }
 
-        Button {
-            text: "Send";
-            clicked => {
-                root.request-increase-value();
+            LineEdit {
+                text <=> request-type;
+                font-family: edit-font-family;
+            }
+        }
+        VerticalBox {
+            TextEdit {
+                text <=> request-content;
+                font-family: edit-font-family;
+            }
+            ProgressIndicator { 
+                visible: loading;
+                indeterminate: true;
+            }
+            Button {
+                text: is_post ? "POST" : "GET";
+                clicked => {
+                    request-clicked(is_post);
+                };
             }
         }
     }

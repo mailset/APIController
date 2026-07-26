@@ -1,0 +1,25 @@
+import { VerticalBox, TextEdit, HorizontalBox, Button, StandardButton } from "std-widgets.slint";
+
+export component ResultDialog inherits Dialog {
+    height: 200px;
+    width: 300px;
+    callback copy-clicked();
+    property <string> request-result;
+    VerticalBox {
+        TextEdit {
+            text: request-result;
+            read-only: true;
+        }
+        HorizontalBox {
+            Button {
+                text: "Copy";
+                clicked => {
+                    copy-clicked();
+                };
+            }
+            StandardButton {
+                kind: ok;
+            }
+        }
+    }
+}
