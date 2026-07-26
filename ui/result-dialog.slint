@@ -1,20 +1,37 @@
 import { VerticalBox, TextEdit, HorizontalBox, Button, StandardButton } from "std-widgets.slint";
 
 export component ResultDialog inherits Dialog {
-    height: 200px;
-    width: 300px;
-    callback copy-clicked();
-    property <string> request-result;
+    preferred-height: 250px;
+    preferred-width: 400px;
+    min-height: 200px;
+    min-width: 350px;
+    callback copy-body-clicked();
+    property <string> request-result-status;
+    property <string> request-result-body;
+    property <string> request-result-head;
     VerticalBox {
-        TextEdit {
-            text: request-result;
-            read-only: true;
+        Text {
+            text: request-result-status;
         }
-        HorizontalBox {
+        HorizontalLayout {
+            spacing: 5px;
+            TextEdit {
+                horizontal-stretch: 2;
+                text: request-result-head;
+                read-only: true;
+            }
+            TextEdit {
+                horizontal-stretch: 3;
+                text: request-result-body;
+                read-only: true;
+            }
+        }
+        HorizontalLayout {
+            spacing: 5px;
             Button {
-                text: "Copy";
+                text: "Copy Body";
                 clicked => {
-                    copy-clicked();
+                    copy-body-clicked();
                 };
             }
             StandardButton {

@@ -2,9 +2,10 @@ import { Button, VerticalBox, HorizontalBox, Switch, TextEdit, LineEdit, Progres
 
 export component AppWindow inherits Window {
     title: "Mini API Controller";
-    width: 550px;
-    height: 250px;
+    preferred-width: 550px;
+    preferred-height: 250px;
     callback request-clicked(bool);
+    callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
     property <string> request-url;
     property <string> request-type: "application/json";
@@ -24,10 +25,11 @@ export component AppWindow inherits Window {
                 font-family: edit-font-family;
                 vertical-stretch: 0;
             }
-
-            LineEdit {
-                text <=> request-type;
-                font-family: edit-font-family;
+            Button {
+                text: "HTTP Headers Setting";
+                clicked => {
+                    headers-setting-clicked();
+                }
             }
         }
         VerticalBox {

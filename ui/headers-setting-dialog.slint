@@ -1,0 +1,15 @@
+import { VerticalBox, TextEdit, Button, StandardButton } from "std-widgets.slint";
+
+export component HeadersSettingDialog inherits Window {
+    preferred-width: 300px;
+    preferred-height: 200px;
+    property <string> request-headers;
+    VerticalBox {
+        TextEdit {
+            text: request-headers;
+        }
+        StandardButton {
+            kind: ok;
+        }
+    }
+}
