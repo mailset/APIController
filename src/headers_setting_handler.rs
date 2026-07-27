@@ -29,7 +29,7 @@ impl HeadersSettingHandler {
                 log::info!(
                     "Added New HTTP Header: {}: {}",
                     dialog.get_name_edit(),
-                    dialog.get_name_edit()
+                    dialog.get_value_edit()
                 );
             } else {
                 log::error!(
