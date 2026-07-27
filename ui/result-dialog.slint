@@ -6,9 +6,9 @@ export component ResultDialog inherits Dialog {
     min-height: 200px;
     min-width: 350px;
     callback copy-body-clicked();
-    property <string> request-result-status;
-    property <string> request-result-body;
-    property <string> request-result-head;
+    in-out property <string> request-result-status;
+    in-out property <string> request-result-body;
+    in-out property <string> request-result-head;
     VerticalBox {
         Text {
             text: request-result-status;
@@ -31,7 +31,7 @@ export component ResultDialog inherits Dialog {
             Button {
                 text: "Copy Body";
                 clicked => {
-                    copy-body-clicked();
+                    root.copy-body-clicked();
                 };
             }
             StandardButton {

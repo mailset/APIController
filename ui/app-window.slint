@@ -7,11 +7,12 @@ export component AppWindow inherits Window {
     callback request-clicked(bool);
     callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
-    property <string> request-url;
-    property <string> request-type: "application/json";
-    property <string> request-content: "{\"Content\":\"Hello\"}";
-    property <bool> loading: false;
     property <bool> is_post: false;
+    in-out property <string> request-url;
+    in-out property <string> request-type: "application/json";
+    in-out property <string> request-content: "{\"Content\":\"Hello\"}";
+    in-out property <bool> loading: false;
+    
     VerticalLayout {
         HorizontalBox {
             Switch {
@@ -28,7 +29,7 @@ export component AppWindow inherits Window {
             Button {
                 text: "HTTP Headers Setting";
                 clicked => {
-                    headers-setting-clicked();
+                    root.headers-setting-clicked();
                 }
             }
         }
@@ -44,7 +45,7 @@ export component AppWindow inherits Window {
             Button {
                 text: is_post ? "POST" : "GET";
                 clicked => {
-                    request-clicked(is_post);
+                    root.request-clicked(is_post);
                 };
             }
         }

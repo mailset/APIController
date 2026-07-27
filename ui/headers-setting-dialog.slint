@@ -1,15 +1,58 @@
-import { VerticalBox, TextEdit, Button, StandardButton } from "std-widgets.slint";
+import { VerticalBox, TextEdit, Button, StandardButton, StandardTableView, HorizontalBox, LineEdit } from "std-widgets.slint";
 
 export component HeadersSettingDialog inherits Window {
     preferred-width: 300px;
     preferred-height: 200px;
-    property <string> request-headers;
+    in-out property <[[StandardListViewItem]]> request-headers;
+    callback add-row();
+    callback modify-row();
+    callback delete-row();
+    callback row-selected(int);
+
     VerticalBox {
-        TextEdit {
-            text: request-headers;
+        StandardTableView {
+            columns: [{
+                title: "HeaderName", horizontal-stretch:4
+            },{
+                title: "HeaderValue",horizontal-stretch:5
+            }];
+            rows: root.request-headers;
+            current-row-changed(current-row) => {
+                row-selected(current-row)
+            }
         }
-        StandardButton {
-            kind: ok;
+        HorizontalLayout {
+            spacing: 5px;
+            LineEdit {
+                horizontal-stretch: 2;
+            }
+            LineEdit {
+                horizontal-stretch: 5;
+            }
+        }
+        HorizontalLayout {
+            spacing: 5px;
+            Button {
+                text: "Add Row";
+                clicked => {
+                    root.add-row()
+                }
+            }
+            Button {
+                text: "Modify Selected Row";
+                clicked => {
+                    root.modify-row()
+                }
+            }
+            Button {
+                text: "Delete Selected Row";
+                clicked => {
+                    root.delete-row()
+                }
+            }
+            StandardButton {
+                kind: ok;
+            }
         }
     }
 }
