@@ -1,4 +1,10 @@
-import { VerticalBox, TextEdit, HorizontalBox, Button, StandardButton } from "std-widgets.slint";
+import {
+    VerticalBox,
+    TextEdit,
+    HorizontalBox,
+    Button,
+    StandardButton,
+} from "std-widgets.slint";
 
 export component ResultDialog inherits Dialog {
     preferred-height: 250px;
@@ -9,23 +15,29 @@ export component ResultDialog inherits Dialog {
     in-out property <string> request-result-status;
     in-out property <string> request-result-body;
     in-out property <string> request-result-head;
+    property <string> edit-font-family: "Consolas";
     VerticalBox {
         Text {
             text: request-result-status;
         }
+
         HorizontalLayout {
             spacing: 5px;
             TextEdit {
                 horizontal-stretch: 2;
-                text: request-result-head;
+                text <=> request-result-head;
                 read-only: true;
+                font-family: edit-font-family;
             }
+
             TextEdit {
                 horizontal-stretch: 3;
-                text: request-result-body;
+                text <=> request-result-body;
                 read-only: true;
+                font-family: edit-font-family;
             }
         }
+
         HorizontalLayout {
             spacing: 5px;
             Button {
@@ -34,8 +46,12 @@ export component ResultDialog inherits Dialog {
                     root.copy-body-clicked();
                 };
             }
+
             StandardButton {
                 kind: ok;
+                clicked => {
+                    root.close();
+                }
             }
         }
     }

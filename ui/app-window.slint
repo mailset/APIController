@@ -47,6 +47,11 @@ export component AppWindow inherits Window {
         }
 
         VerticalBox {
+            LineEdit {
+                text <=> RequestData.request-ua;
+                font-family: edit-font-family;
+            }
+
             TextEdit {
                 text <=> RequestData.request-content;
                 font-family: edit-font-family;

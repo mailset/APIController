@@ -1,8 +1,6 @@
-use std::rc::Rc;
-
-use slint::{ComponentHandle, Model, ModelRc, VecModel, language::StandardListViewItem};
-
 use crate::ui::{HeadersSettingDialog, RequestData};
+use slint::{ComponentHandle, Model, ModelRc, VecModel, language::StandardListViewItem};
+use std::rc::Rc;
 
 pub struct HeadersSettingHandler {}
 
