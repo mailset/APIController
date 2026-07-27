@@ -1,27 +1,38 @@
 // Prevent console window in addition to Slint window in Windows release builds when, e.g., starting the app via file manager. Ignored on other platforms.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use reqwest::header::HeaderMap;
-use reqwest::header::HeaderName;
 use std::error::Error;
 
-slint::include_modules!();
+use crate::headers_setting_handler::HeadersSettingHandler;
+
+pub mod ui {
+    slint::include_modules!();
+}
+
+mod headers_setting_handler;
+
+use ui::*;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let ui = AppWindow::new()?;
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        HeaderName::from_static("content-type"),
-        "application/json".parse().unwrap(),
-    );
+    // Initialize Logger
+    env_logger::Builder::default()
+        .filter_level(if cfg!(debug_assertions) {
+            log::LevelFilter::Debug
+        } else {
+            log::LevelFilter::Info
+        })
+        .init();
 
-    let ui_handle = ui.as_weak();
-    // ui.on_request_increase_value(move || {
-    //     let ui = ui_handle.unwrap();
-    //     ui.set_counter(ui.get_counter() + 1);
-    // });
-    ui.on_request_clicked(move |is_post| {
-        let ui = ui_handle.unwrap();
+    // Initialize Windows and Dialogs
+    let ui = AppWindow::new()?;
+    let headers_dialog = HeadersSettingDialog::new()?;
+    let result_dialog = ResultDialog::new()?;
+
+    let mut headers_setting_handler = HeadersSettingHandler::new();
+    headers_setting_handler.initialize_ui(&headers_dialog);
+
+    ui.on_headers_setting_clicked(move || {
+        headers_dialog.show().unwrap();
     });
 
     ui.run()?;
@@ -29,4 +40,4 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn send_request(headers: HeaderMap, is_post: bool) {}
+// fn send_request(headers: HeaderMap, is_post: bool) {}

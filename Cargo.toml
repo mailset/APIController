@@ -1,5 +1,5 @@
 [package]
-name = "slint-rust-template"
+name = "api-controller"
 version = "0.1.0"
 edition = "2024"
 
@@ -8,6 +8,8 @@ edition = "2024"
 [dependencies]
 slint = "1.16.1"
 reqwest = "0.13.4"
+env_logger = "0.11.11"
+log = "0.4.33"
 
 [build-dependencies]
 slint-build = "1.16.1"

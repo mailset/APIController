@@ -1,5 +1,17 @@
-import { Button, VerticalBox, HorizontalBox, Switch, TextEdit, LineEdit, ProgressIndicator } from "std-widgets.slint";
+import {
+    Button,
+    VerticalBox,
+    HorizontalBox,
+    Switch,
+    TextEdit,
+    LineEdit,
+    ProgressIndicator,
+} from "std-widgets.slint";
+import { HeadersSettingDialog } from "headers-setting-dialog.slint";
+import { ResultDialog } from "result-dialog.slint";
+import { RequestData } from "request-datas.slint";
 
+export { HeadersSettingDialog, ResultDialog, RequestData }
 export component AppWindow inherits Window {
     title: "Mini API Controller";
     preferred-width: 550px;
@@ -8,24 +20,24 @@ export component AppWindow inherits Window {
     callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
     property <bool> is_post: false;
-    in-out property <string> request-url;
-    in-out property <string> request-type: "application/json";
-    in-out property <string> request-content: "{\"Content\":\"Hello\"}";
+
     in-out property <bool> loading: false;
-    
+
     VerticalLayout {
         HorizontalBox {
             Switch {
                 text: is_post ? "POST" : "GET  ";
                 checked <=> is_post;
             }
+
             LineEdit {
                 placeholder-text: "https://www.example.com/api";
-                text <=> request-url;
+                text <=> RequestData.request-url;
                 font-size: 16px;
                 font-family: edit-font-family;
                 vertical-stretch: 0;
             }
+
             Button {
                 text: "HTTP Headers Setting";
                 clicked => {
@@ -33,15 +45,18 @@ export component AppWindow inherits Window {
                 }
             }
         }
+
         VerticalBox {
             TextEdit {
-                text <=> request-content;
+                text <=> RequestData.request-content;
                 font-family: edit-font-family;
             }
-            ProgressIndicator { 
+
+            ProgressIndicator {
                 visible: loading;
                 indeterminate: true;
             }
+
             Button {
                 text: is_post ? "POST" : "GET";
                 clicked => {

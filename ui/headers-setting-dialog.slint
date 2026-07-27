@@ -1,35 +1,54 @@
-import { VerticalBox, TextEdit, Button, StandardButton, StandardTableView, HorizontalBox, LineEdit } from "std-widgets.slint";
+import {
+    VerticalBox,
+    TextEdit,
+    Button,
+    StandardButton,
+    StandardTableView,
+    HorizontalBox,
+    LineEdit,
+} from "std-widgets.slint";
+import { RequestData } from "request-datas.slint";
 
-export component HeadersSettingDialog inherits Window {
+export component HeadersSettingDialog inherits Dialog {
+    title: "Headers Setting";
     preferred-width: 300px;
     preferred-height: 200px;
-    in-out property <[[StandardListViewItem]]> request-headers;
+    in-out property <string> name-edit;
+    in-out property <string> value-edit;
+    property <int> current-row;
     callback add-row();
-    callback modify-row();
-    callback delete-row();
-    callback row-selected(int);
+    callback modify-row(int);
+    callback delete-row(int);
 
     VerticalBox {
         StandardTableView {
-            columns: [{
-                title: "HeaderName", horizontal-stretch:4
-            },{
-                title: "HeaderValue",horizontal-stretch:5
-            }];
-            rows: root.request-headers;
+            columns: [
+                { title: "HeaderName", horizontal-stretch:4 },
+                { title: "HeaderValue", horizontal-stretch:5 }
+            ];
+            rows: RequestData.request-headers;
+            current-row <=> current-row;
             current-row-changed(current-row) => {
-                row-selected(current-row)
+                if current-row >= 0 && current-row < RequestData.request-headers.length {
+                    name-edit = RequestData.request-headers[current-row][0].text;
+                    value-edit = RequestData.request-headers[current-row][1].text;
+                }
             }
         }
+
         HorizontalLayout {
             spacing: 5px;
             LineEdit {
+                text <=> name-edit;
                 horizontal-stretch: 2;
             }
+
             LineEdit {
+                text <=> value-edit;
                 horizontal-stretch: 5;
             }
         }
+
         HorizontalLayout {
             spacing: 5px;
             Button {
@@ -38,20 +57,26 @@ export component HeadersSettingDialog inherits Window {
                     root.add-row()
                 }
             }
+
             Button {
                 text: "Modify Selected Row";
                 clicked => {
-                    root.modify-row()
+                    root.modify-row(current-row)
                 }
             }
+
             Button {
                 text: "Delete Selected Row";
                 clicked => {
-                    root.delete-row()
+                    root.delete-row(current-row)
                 }
             }
+
             StandardButton {
                 kind: ok;
+                clicked => {
+                    root.close();
+                }
             }
         }
     }

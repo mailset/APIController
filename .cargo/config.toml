@@ -2,7 +2,7 @@
 # Increase default stack size to avoid running out of stack
 # space in debug builds. The size matches Linux's default.
 rustflags = [
-    "-C", "link-arg=/STACK:8000000"
+    "-C", "link-arg=-fuse-ld=mold"
 ]
 [target.aarch64-pc-windows-msvc]
 # Increase default stack size to avoid running out of stack
@@ -10,3 +10,8 @@ rustflags = [
 rustflags = [
     "-C", "link-arg=/STACK:8000000"
 ]
+
+[build]
+jobs=12
+incremental = true
+rustc-wrapper = "sccache"
