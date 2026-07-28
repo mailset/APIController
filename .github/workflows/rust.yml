@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.10
     - name: Build
       run: cargo build --release --verbose
     - name: Run tests
