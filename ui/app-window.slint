@@ -9,7 +9,7 @@ import {
 } from "std-widgets.slint";
 import { HeadersSettingDialog } from "headers-setting-dialog.slint";
 import { ResultDialog } from "result-dialog.slint";
-import { RequestData } from "request-datas.slint";
+import { RequestData } from "request-data.slint";
 import { ErrorDialog } from "error-dialog.slint";
 
 export { HeadersSettingDialog, ResultDialog, RequestData, ErrorDialog }
@@ -20,22 +20,21 @@ export component AppWindow inherits Window {
     callback request-clicked(bool);
     callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
-    property <bool> is_post: false;
-
+    in-out property <bool> is_post: false;
     in-out property <bool> loading: false;
 
     VerticalLayout {
         HorizontalBox {
             Switch {
                 text: is_post ? "POST" : "GET  ";
-                checked <=> is_post;
+                checked <=> root.is_post;
             }
 
             LineEdit {
                 placeholder-text: "https://www.example.com/api";
                 text <=> RequestData.request-url;
                 font-size: 16px;
-                font-family: edit-font-family;
+                font-family: root.edit-font-family;
                 vertical-stretch: 0;
             }
 
@@ -50,21 +49,21 @@ export component AppWindow inherits Window {
         VerticalBox {
             LineEdit {
                 text <=> RequestData.request-ua;
-                font-family: edit-font-family;
+                font-family: root.edit-font-family;
             }
 
             TextEdit {
                 text <=> RequestData.request-content;
-                font-family: edit-font-family;
+                font-family: root.edit-font-family;
             }
 
             ProgressIndicator {
-                visible: loading;
+                visible: root.loading;
                 indeterminate: true;
             }
 
             Button {
-                text: is_post ? "POST" : "GET";
+                text: root.is_post ? "POST" : "GET";
                 clicked => {
                     root.request-clicked(is_post);
                 };

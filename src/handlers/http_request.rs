@@ -1,10 +1,7 @@
-use reqwest::{
-    Client, Error, Response,
-    header::{HeaderMap, HeaderName, HeaderValue},
-};
-use slint::{Model, ModelRc, ToSharedString, VecModel, language::StandardListViewItem};
+use reqwest::{Client, Error, Response, header::HeaderMap};
+use slint::ToSharedString;
 
-use crate::ui::{RequestData, ResultDialog};
+use crate::ui::ResultDialog;
 
 pub struct HttpRequestHandler {}
 
@@ -35,6 +32,7 @@ impl HttpRequestHandler {
         }
         let status_str = format!("{} {}", status.as_u16(), status.canonical_reason().unwrap());
 
+        // TODO: Copy to clipboard
         dialog.set_request_result_body(body.to_shared_string());
         dialog.set_request_result_status(status_str.to_shared_string());
         dialog.set_request_result_head(headers_string.to_shared_string());
@@ -43,31 +41,12 @@ impl HttpRequestHandler {
 
     pub async fn send_request(
         &self,
-        request_data: RequestData<'_>,
+        headers: HeaderMap,
+        body: String,
+        user_agent: String,
+        url: String,
         is_post: bool,
     ) -> Result<Response, Error> {
-        // Initializing values that request needs.
-        let mut headers = HeaderMap::new();
-        let headers_rc = request_data.get_request_headers();
-        let body = request_data.get_request_content().to_string();
-        let user_agent = request_data.get_request_ua();
-        let url = request_data.get_request_url();
-
-        // Generate Headers List which will recoginized by reqwest from slint's tabview
-        if let Some(headers_raw) = headers_rc
-            .as_any()
-            .downcast_ref::<VecModel<ModelRc<StandardListViewItem>>>()
-        {
-            for row in headers_raw.iter() {
-                let name = row.row_data(0).map(|item| item.text).unwrap_or_default();
-                let value = row.row_data(1).map(|item| item.text).unwrap_or_default();
-                headers.insert(
-                    HeaderName::from_lowercase(name.to_lowercase().as_bytes()).unwrap(),
-                    HeaderValue::from_str(value.as_str()).unwrap(),
-                );
-            }
-        }
-
         // Generate Client
         let client = Client::builder()
             .user_agent(user_agent.as_str())
