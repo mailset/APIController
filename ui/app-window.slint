@@ -2,10 +2,10 @@ import {
     Button,
     VerticalBox,
     HorizontalBox,
-    Switch,
     TextEdit,
     LineEdit,
     ProgressIndicator,
+    ComboBox,
 } from "std-widgets.slint";
 
 import { HeadersSettingDialog } from "dialogs/headers-setting-dialog.slint";
@@ -28,16 +28,22 @@ export component AppWindow inherits Window {
     preferred-height: 250px;
     min-width: 420px;
     min-height: 240px;
-    callback request-clicked(bool);
+    callback request-clicked(int);
     callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
-    property <bool> is_post: false;
+    property <string> method-name: "GET";
+    property <int> method-index;
 
     VerticalLayout {
         HorizontalBox {
-            Switch {
-                text: is_post ? "POST" : "GET  ";
-                checked <=> root.is_post;
+            ComboBox {
+                model: ["GET", "POST", "DELETE"];
+                width: 100px;
+                current-index <=> root.method-index;
+                selected(current-value) => {
+                    debug("Method Selected:", current-value, root.method-index);
+                    root.method-name = current-value;
+                }
             }
 
             LineEdit {
@@ -73,9 +79,9 @@ export component AppWindow inherits Window {
             }
 
             Button {
-                text: root.is_post ? "POST" : "GET";
+                text <=> root.method-name;
                 clicked => {
-                    root.request-clicked(is_post);
+                    root.request-clicked(root.method-index);
                 };
             }
         }

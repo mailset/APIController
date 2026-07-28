@@ -44,7 +44,7 @@ impl HttpRequestHandler {
         body: String,
         user_agent: String,
         url: String,
-        is_post: bool,
+        method_index: i32,
     ) -> Result<Response, Error> {
         // Generate Client
         let client = Client::builder()
@@ -53,10 +53,10 @@ impl HttpRequestHandler {
             .build()
             .unwrap();
         // Send Requests.
-        if is_post {
-            client.post(url.as_str()).body(body).send().await
-        } else {
-            client.get(url.as_str()).body(body).send().await
+        match method_index {
+            1 => client.post(url.as_str()).body(body).send().await,
+            2 => client.delete(url.as_str()).body(body).send().await,
+            _ => client.get(url.as_str()).body(body).send().await,
         }
     }
 }

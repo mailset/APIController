@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Send Requests
     let ui_model = ui.as_weak();
-    ui.on_request_clicked(move |is_post| {
+    ui.on_request_clicked(move |method_index| {
         // Start loading progress bar.
         let ui = ui_model.upgrade().unwrap();
         ui.global::<ControlsBinding>().set_is_loading(true);
@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let ui_weak = ui.as_weak();
         tokio::spawn(async move {
             let response = http_request_handler
-                .send_request(headers, body, user_agent, url, is_post)
+                .send_request(headers, body, user_agent, url, method_index)
                 .await;
 
             let result: Result<(HeaderMap, reqwest::StatusCode, String), reqwest::Error> =
