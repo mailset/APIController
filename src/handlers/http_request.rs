@@ -74,14 +74,11 @@ impl HttpRequestHandler {
             .default_headers(headers)
             .build()
             .unwrap();
-        // TODO: Error Catching(Such as non-existing domain handler) needed here.
         // Send Requests.
-        let res = if is_post {
-            client.post(url.as_str()).body(body).send().await?
+        if is_post {
+            client.post(url.as_str()).body(body).send().await
         } else {
-            client.get(url.as_str()).body(body).send().await?
-        };
-
-        Ok(res)
+            client.get(url.as_str()).body(body).send().await
+        }
     }
 }

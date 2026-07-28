@@ -1,0 +1,19 @@
+import { AboutSlint, VerticalBox, StandardButton } from "std-widgets.slint";
+
+export component ErrorDialog inherits Dialog {
+    title: "Error";
+    in property <string> error-info;
+
+    VerticalBox {
+        Text {
+            text <=> error-info;
+        }
+
+        StandardButton {
+            kind: ok;
+            clicked => {
+                root.close();
+            }
+        }
+    }
+}

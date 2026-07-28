@@ -8,13 +8,14 @@ use api_controller::handlers::http_request::HttpRequestHandler;
 
 use api_controller::ui::*;
 use futures::executor::block_on;
+use slint::ToSharedString;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Initialize Logger
     env_logger::Builder::default()
         .filter_level(if cfg!(debug_assertions) {
-            log::LevelFilter::Debug
+            log::LevelFilter::Info
         } else {
             log::LevelFilter::Info
         })
@@ -43,9 +44,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let request_data = ui.global::<RequestData>();
 
         // TODO: Non-blocking method needed here.
-        let response = block_on(http_request_handler.send_request(request_data, is_post)).unwrap();
-        block_on(http_request_handler.initialize_ui(&result_dialog, response)).unwrap();
-        result_dialog.show().unwrap();
+        match block_on(http_request_handler.send_request(request_data, is_post)) {
+            Ok(response) => {
+                block_on(http_request_handler.initialize_ui(&result_dialog, response)).unwrap();
+                result_dialog.show().unwrap();
+            }
+            Err(error) => {
+                let error_dialog = ErrorDialog::new().unwrap();
+                error_dialog.set_error_info(format!("{}", error).to_shared_string());
+                error_dialog.show().unwrap();
+            }
+        }
+
         ui.set_loading(false);
     });
 
