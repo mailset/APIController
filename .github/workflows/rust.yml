@@ -12,15 +12,32 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy: 
+      matrix:
+        include:
+          - os: ubuntu-latest
+            binary_ext: ''
+            artifact_name: 'api-controller (linux)'
+          - os: windows-latest
+            artifact_name: 'api-controller (windows)'
+            binary_ext: '.exe'
+
+
 
     steps:
     - uses: actions/checkout@v4
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.10
-    - name: Install libfontconfig
+    - name: Install libfontconfig (linux)
+      if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get update && sudo apt-get install -y libfontconfig-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{matrix.artifact_name}}
+        path: target/debug/api-controller${{matrix.binary_ext}}
