@@ -7,7 +7,6 @@ use api_controller::handlers::headers_setting::HeadersSettingHandler;
 use api_controller::handlers::http_request::HttpRequestHandler;
 
 use api_controller::ui::*;
-use futures::executor::block_on;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use slint::{Model, ModelRc, ToSharedString, VecModel, language::StandardListViewItem};
 
@@ -41,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     ui.on_request_clicked(move |is_post| {
         // Start loading progress bar.
         let ui = ui_model.upgrade().unwrap();
-        ui.set_loading(true);
+        ui.global::<ControlsBinding>().set_is_loading(true);
 
         // Initialize Request Data
         let request_data = ui.global::<RequestData>();
@@ -77,14 +76,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .send_request(headers, body, user_agent, url, is_post)
                 .await;
 
-            slint::invoke_from_event_loop(move || {
-                let result_dialog = result_dialog_weak.unwrap();
-                let ui = ui_weak.unwrap();
+            let result: Result<(HeaderMap, reqwest::StatusCode, String), reqwest::Error> =
                 match response {
                     Ok(response) => {
-                        block_on(http_request_handler.initialize_ui(&result_dialog, response))
-                            .unwrap();
+                        // Clone headers and status before consuming the response by calling text().
+                        let headers_clone = response.headers().clone();
+                        let status = response.status();
+                        match response.text().await {
+                            Ok(body) => Ok((headers_clone, status, body)),
+                            Err(error) => Err(error),
+                        }
+                    }
+                    Err(error) => Err(error),
+                };
+
+            slint::invoke_from_event_loop(move || {
+                let result_dialog = result_dialog_weak.unwrap();
+                match result {
+                    Ok((headers, status, body)) => {
+                        http_request_handler.initialize_ui(&result_dialog, headers, status, body);
                         result_dialog.show().unwrap();
+                        slint::invoke_from_event_loop(move || {
+                            let ui = ui_weak.unwrap();
+                            ui.global::<ControlsBinding>().set_is_loading(false);
+                        })
+                        .unwrap();
                     }
                     Err(error) => {
                         let error_dialog = ErrorDialog::new().unwrap();
@@ -92,8 +108,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         error_dialog.show().unwrap();
                     }
                 }
-                ui.set_loading(false);
             })
+            .unwrap();
         });
     });
 

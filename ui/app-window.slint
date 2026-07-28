@@ -7,21 +7,31 @@ import {
     LineEdit,
     ProgressIndicator,
 } from "std-widgets.slint";
-import { HeadersSettingDialog } from "headers-setting-dialog.slint";
-import { ResultDialog } from "result-dialog.slint";
-import { RequestData } from "request-data.slint";
-import { ErrorDialog } from "error-dialog.slint";
 
-export { HeadersSettingDialog, ResultDialog, RequestData, ErrorDialog }
+import { HeadersSettingDialog } from "dialogs/headers-setting-dialog.slint";
+import { ResultDialog } from "dialogs/result-dialog.slint";
+import { ErrorDialog } from "dialogs/error-dialog.slint";
+
+import { RequestData } from "bindings/request-data.slint";
+import { ControlsBinding } from "bindings/controls-binding.slint";
+
+export {
+    HeadersSettingDialog,
+    ResultDialog,
+    RequestData,
+    ErrorDialog,
+    ControlsBinding,
+}
 export component AppWindow inherits Window {
     title: "Mini API Controller";
     preferred-width: 550px;
     preferred-height: 250px;
+    min-width: 420px;
+    min-height: 240px;
     callback request-clicked(bool);
     callback headers-setting-clicked();
     property <string> edit-font-family: "Consolas";
-    in-out property <bool> is_post: false;
-    in-out property <bool> loading: false;
+    property <bool> is_post: false;
 
     VerticalLayout {
         HorizontalBox {
@@ -58,7 +68,7 @@ export component AppWindow inherits Window {
             }
 
             ProgressIndicator {
-                visible: root.loading;
+                visible: ControlsBinding.is-loading;
                 indeterminate: true;
             }
 

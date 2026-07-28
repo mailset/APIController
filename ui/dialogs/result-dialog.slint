@@ -6,10 +6,12 @@ import {
     StandardButton,
 } from "std-widgets.slint";
 
+import { ControlsBinding } from "../bindings/controls-binding.slint";
+
 export component ResultDialog inherits Dialog {
     title: "Response";
-    preferred-height: 250px;
-    preferred-width: 400px;
+    preferred-height: 450px;
+    preferred-width: 600px;
     min-height: 200px;
     min-width: 350px;
     callback copy-body-clicked();

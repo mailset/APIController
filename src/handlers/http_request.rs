@@ -1,4 +1,4 @@
-use reqwest::{Client, Error, Response, header::HeaderMap};
+use reqwest::{Client, Error, Response, StatusCode, header::HeaderMap};
 use slint::ToSharedString;
 
 use crate::ui::ResultDialog;
@@ -10,15 +10,15 @@ impl HttpRequestHandler {
         HttpRequestHandler {}
     }
 
-    pub async fn initialize_ui(
+    pub fn initialize_ui(
         &self,
         dialog: &ResultDialog,
-        response: Response,
-    ) -> Result<(), Error> {
+        headers: HeaderMap,
+        status: StatusCode,
+        body: String,
+    ) {
         // clone headers to avoid borrowing `response` across the async await point below
-        let headers = response.headers().clone();
-        let status = response.status();
-        let body = response.text().await?;
+
         let mut headers_string = String::from("");
         for (header_name, header_value) in headers.iter() {
             headers_string.push_str(
@@ -36,7 +36,6 @@ impl HttpRequestHandler {
         dialog.set_request_result_body(body.to_shared_string());
         dialog.set_request_result_status(status_str.to_shared_string());
         dialog.set_request_result_head(headers_string.to_shared_string());
-        Ok(())
     }
 
     pub async fn send_request(
